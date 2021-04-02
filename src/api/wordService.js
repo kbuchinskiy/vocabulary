@@ -13,4 +13,10 @@ export default {
   getWords() {
     return apiClient.get(`/words`)
   },
+  postWord(word) {
+    return apiClient.post(`/words`, word)
+  },
+  deleteWord(id) {
+    return apiClient.delete(`/words/${id}`)
+  },
 }
