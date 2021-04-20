@@ -1,7 +1,7 @@
 import axios from 'axios'
 
 const apiClient = axios.create({
-  baseURL: `http://localhost:3000`,
+  baseURL: `http://localhost:5000/api`,
   withCredentials: false, // This is the default
   headers: {
     Accept: 'application/json',
@@ -11,12 +11,12 @@ const apiClient = axios.create({
 
 export default {
   getWords() {
-    return apiClient.get(`/words`)
+    return apiClient.get(`/word`)
   },
   postWord(word) {
-    return apiClient.post(`/words`, word)
+    return apiClient.post(`/word`, word)
   },
-  deleteWord(id) {
-    return apiClient.delete(`/words/${id}`)
+  deleteWord(word) {
+    return apiClient.delete(`/word/${word.en}`)
   },
 }

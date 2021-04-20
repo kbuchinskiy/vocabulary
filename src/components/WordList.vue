@@ -1,27 +1,29 @@
 <template>
   <div>
-    <input v-model="wordInput" type="text" placeholder="enter word..." />
-
-    <form
-      v-show="wordsToDisplay.length === 0"
-      class="add-word"
-      @submit.prevent="addWord"
-    >
+    <form class="add-word" @submit.prevent="addWord">
       <input
-        v-model="wordTranslation"
+        v-model="wordInput"
         type="text"
-        placeholder="enter translation..."
+        placeholder="enter word..."
         required="true"
       />
-      <br />
-      <button type="sumbit">add new word</button>
+      <div v-show="wordsToDisplay.length === 0">
+        <input
+          v-model="wordTranslation"
+          type="text"
+          placeholder="enter translation..."
+          required="true"
+        />
+        <br />
+        <button type="sumbit">add new word</button>
+      </div>
     </form>
 
     <section class="words-list">
       <word-list-item
         v-for="word in wordsToDisplay"
         :word="word"
-        :key="word.id"
+        :key="word.en"
         @remove="deleteWord"
       ></word-list-item>
     </section>
@@ -33,7 +35,7 @@ import _ from 'lodash'
 import WordListItem from '@/components/WordListItem'
 import wordService from '@/api/wordService'
 export default {
-  name: 'App',
+  name: 'word-list',
   components: {
     WordListItem,
   },
@@ -64,8 +66,8 @@ export default {
         alert('enter word translation')
       }
     },
-    async deleteWord(id) {
-      await wordService.deleteWord(id)
+    async deleteWord(word) {
+      await wordService.deleteWord(word)
       this.getWords()
     },
     async getWords() {

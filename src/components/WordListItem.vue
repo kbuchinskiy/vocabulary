@@ -5,7 +5,7 @@
       <span class="separator"> — </span>
       {{ word.ru }}
     </p>
-    <button @click="$emit('remove', word.id)">delete</button>
+    <button @click="$emit('remove', word)">delete</button>
   </div>
 </template>
 
