@@ -16,7 +16,7 @@ router
   .post(createItem);
 
 router
-  .route('/:id')
+  .route('/:origin')
   .get(getItem)
   .put(updateItem)
   .delete(deleteItem);
