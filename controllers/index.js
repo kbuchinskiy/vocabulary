@@ -37,7 +37,10 @@ const getItems = asyncHandler(async (req, res, next) => {
 });
 
 const getItem = asyncHandler(async (req, res, next) => {
-  const word = await Word.findById(req.params.id);
+  const word = await Word.findOne({
+    origin: req.params.origin,
+  });
+
   if (!word) {
     return next(new ErrorResponse(`Item not found with id of ${req.params.id}`, 404));
   }
