@@ -3,13 +3,11 @@
     <el-table :data="words" empty-text="No words">
       <el-table-column type="expand">
         <template slot-scope="scope">
-          <div v-for="(meaning, i) in scope.row.definitions" :key="i">
-            <h2>{{ meaning.partOfSpeech }}</h2>
-            <el-table :data="meaning.definitions">
-              <el-table-column label="Definition" prop="definition" />
-              <el-table-column label="Example" prop="example" />
-            </el-table>
-          </div>
+          <el-table :data="scope.row.definitions">
+            <el-table-column prop="part_of_speech" label="Part of speech" />
+            <el-table-column prop="definition" label="Definition" />
+            <el-table-column prop="example" label="Example" />
+          </el-table>
         </template>
       </el-table-column>
       <el-table-column label="Word" prop="origin" />
@@ -17,12 +15,11 @@
       <el-table-column label="Translation" prop="translation" />
       <el-table-column label="Image" width="80">
         <template v-slot="scope">
-          <el-image :src="scope.row.imgUrl" fit="cover" alt="image" />
+          <el-image :src="scope.row.image_url" fit="cover" alt="image" />
         </template>
       </el-table-column>
       <el-table-column align="center" width="60">
         <template v-slot="scope">
-          <!--          <el-button icon="el-icon-edit" size="small" circle />-->
           <el-button
             @click="deleteItem(scope.row.origin)"
             icon="el-icon-delete"

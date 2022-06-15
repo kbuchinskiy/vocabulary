@@ -4,7 +4,6 @@ import {
   getItems,
   getItem,
   createItem,
-  updateItem,
   deleteItem,
 } from '../controllers/index';
 
@@ -18,7 +17,6 @@ router
 router
   .route('/:origin')
   .get(getItem)
-  .put(updateItem)
   .delete(deleteItem);
 
 export default router;

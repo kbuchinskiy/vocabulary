@@ -2,13 +2,11 @@ import fs from 'fs';
 import mongoose from 'mongoose';
 import colors from 'colors';
 import dotenv from 'dotenv';
-import Word from './models/Word';
-import connectDB from './config/db';
-import { fetchThirdPartyData } from './controllers/ThirdPartyHelpers';
+
+import { fetchThirdPartyData, getDefinitionsArray } from './controllers/ThirdPartyHelpers';
+import knexClient from './db';
 
 dotenv.config({ path: './config/config.env' });
-
-connectDB();
 
 const wordsList = JSON.parse(fs.readFileSync(`${__dirname}/_data/words.json`))
   .map(w => ({
@@ -27,8 +25,20 @@ const importData = async () => {
         ...wordsList[i]
       });
     }
+    const wordsRows = words.map(w => ({
+      origin: w.origin,
+      translation: w.translation,
+      phonetic: w.phonetic,
+      image_url: w.imgUrl,
+    }));
 
-    await Word.create(words);
+    await knexClient('words').insert(wordsRows);
+    const definitions = words.reduce((acc, w) => {
+      acc.push(...getDefinitionsArray(w.definitions, w.origin));
+      return acc;
+    }, []);
+    await knexClient('definitions').insert(definitions);
+
     console.log('Data imported'.green.inverse);
     process.exit();
   } catch (e) {
@@ -38,8 +48,8 @@ const importData = async () => {
 
 const deleteData = async () => {
   try {
-    await Word.deleteMany();
-    console.log('Data deleted'.red.inverse);
+    await knexClient('words').del();
+    console.log('Data deleted'.green.inverse);
     process.exit();
   } catch (e) {
     console.error(e);

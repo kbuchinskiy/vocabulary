@@ -2,14 +2,11 @@ import express from 'express';
 import dotenv from 'dotenv';
 import morgan from 'morgan';
 import router from './routes';
-import connectDB from './config/db';
 import colors from 'colors';
 import errorHandler from './middleware/error';
 import cors from 'cors';
 
 dotenv.config({ path: './config/config.env' });
-
-connectDB();
 
 const PORT = process.env.PORT;
 const app = express();

@@ -51,4 +51,16 @@ const fetchThirdPartyData = async (origin) => {
   return dataObj;
 };
 
-export { fetchThirdPartyData };
+const getDefinitionsArray = (definitions, origin) => {
+  return definitions.reduce((acc, item) => {
+    item.definitions.forEach((d) => acc.push({
+      origin_id: origin,
+      part_of_speech: item.partOfSpeech,
+      definition: d.definition,
+      example: d.example,
+    }));
+    return acc;
+  }, []);
+};
+
+export { fetchThirdPartyData, getDefinitionsArray };
