@@ -40,24 +40,27 @@
 
 <script>
 import WordsList from '@/components/WordsList.vue';
-import { api } from '@/api/words';
 import { debounce } from 'lodash';
 import { defineComponent, ref, computed, onBeforeMount, watch } from 'vue';
 import { WordListEvents } from '@/components/WordsList.vue';
-import { ElMessage } from 'element-plus';
 import { Plus } from '@element-plus/icons-vue';
+import { useWordsStore } from '@/store/words';
 
 export default defineComponent({
   name: 'Vocabulary',
   components: { WordsList },
   setup() {
     const loading = ref(false);
-    const dictionaryData = ref([]);
+
     const origin = ref('');
     const translation = ref('');
     const pageNumber = ref(1);
     const itemsTotal = ref(0);
     const limit = ref(10);
+
+    const wordsStore = useWordsStore();
+
+    const dictionaryData = computed(() => wordsStore.words);
 
     const enableAddBtn = computed(() => {
       return (
@@ -67,49 +70,30 @@ export default defineComponent({
       );
     });
 
-    const addWord = async () => {
-      loading.value = true;
-      try {
-        await api().post('/words', {
-          origin: origin.value,
-          translation: translation.value,
-        });
-      } catch (e) {
-        ElMessage({
-          message: 'Word doesn\'t exist"',
-          grouping: true,
-          type: 'error',
-        });
-        console.error(e);
-      }
-
+    const resetInputData = () => {
       origin.value = '';
       translation.value = '';
       itemsTotal.value = 0;
+    };
 
+    const addWord = async () => {
+      loading.value = true;
+      resetInputData();
       loading.value = false;
     };
 
     const deleteWord = async (origin) => {
-      await api().delete(`/words/${origin}`);
-      await fetchWords();
+      await wordsStore.deleteWord(origin);
     };
 
     const fetchWords = async () => {
       loading.value = true;
-      // const accessToken = await this.$auth.getTokenSilently();
-      const { data } = await api().get('/words', {
-        // headers: {
-        //   Authorization: `Bearer ${accessToken}`,
-        // },
-        params: {
-          search: origin.value,
-          limit: limit.value,
-          page: pageNumber.value,
-        },
+
+      await wordsStore.loadWords({
+        search: origin.value,
+        limit: limit.value,
+        page: pageNumber.value,
       });
-      dictionaryData.value = data.data;
-      itemsTotal.value = data.count;
 
       loading.value = false;
     };
