@@ -15,15 +15,13 @@ export const useWordsStore = defineStore('words', () => {
 
   const addWord = async (origin, translation) => {
     await api().post('/words', {
-      origin: origin,
-      translation: translation,
+      origin,
+      translation,
     });
-    await loadWords();
   };
 
   const deleteWord = async (origin) => {
     await removeWord(origin);
-    await loadWords();
   };
 
   return { words, totalItems, loadWords, addWord, deleteWord };

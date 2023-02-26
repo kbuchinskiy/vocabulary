@@ -57,4 +57,13 @@ const removeWord = async (origin) => {
   }
 };
 
-export { api, fetchWords, insertWord, removeWord };
+const fetchWord = async (origin) => {
+  try {
+    const { data } = await api().get(`/words/${origin}`);
+    return data;
+  } catch (e) {
+    console.error(e);
+  }
+};
+
+export { api, fetchWords, insertWord, removeWord, fetchWord };

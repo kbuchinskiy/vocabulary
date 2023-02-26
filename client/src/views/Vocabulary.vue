@@ -78,12 +78,15 @@ export default defineComponent({
 
     const addWord = async () => {
       loading.value = true;
+      await wordsStore.addWord(origin.value, translation.value);
+      await fetchWords();
       resetInputData();
       loading.value = false;
     };
 
     const deleteWord = async (origin) => {
       await wordsStore.deleteWord(origin);
+      await fetchWords();
     };
 
     const fetchWords = async () => {

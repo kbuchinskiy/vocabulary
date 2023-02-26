@@ -35,9 +35,15 @@ const getItems = asyncHandler(async (req, res, next) => {
 
 const getItem = asyncHandler(async (req, res, next) => {
   const word = await knexClient('words').where('origin', req.params.origin);
+  const definitions = await knexClient('definitions').whereIn('origin_id', [
+    req.params.origin,
+  ]);
   res.status(200).json({
     success: true,
-    data: word[0]
+    data: {
+      ...word[0],
+      definitions,
+    },
   });
 });
 
