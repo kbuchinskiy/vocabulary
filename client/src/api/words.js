@@ -10,9 +10,6 @@ function api() {
 const fetchWords = async (search, limit, page) => {
   try {
     const { data } = await api().get('/words', {
-      // headers: {
-      //   Authorization: `Bearer ${accessToken}`,
-      // },
       params: {
         search,
         limit,
