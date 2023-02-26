@@ -1,4 +1,4 @@
-# client
+# test-vite
 
 ## Project setup
 ```

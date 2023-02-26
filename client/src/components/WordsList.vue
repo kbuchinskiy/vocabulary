@@ -2,7 +2,7 @@
   <div>
     <el-table :data="words" empty-text="No words">
       <el-table-column type="expand">
-        <template slot-scope="scope">
+        <template v-slot="scope">
           <el-table :data="scope.row.definitions">
             <el-table-column prop="part_of_speech" label="Part of speech" />
             <el-table-column prop="definition" label="Definition" />
@@ -13,16 +13,12 @@
       <el-table-column label="Word" prop="origin" />
       <el-table-column label="Phonetic" prop="phonetic" />
       <el-table-column label="Translation" prop="translation" />
-      <el-table-column label="Image" width="80">
-        <template v-slot="scope">
-          <el-image :src="scope.row.image_url" fit="cover" alt="image" />
-        </template>
-      </el-table-column>
       <el-table-column align="center" width="60">
         <template v-slot="scope">
           <el-button
             @click="deleteItem(scope.row.origin)"
-            icon="el-icon-delete"
+            :icon="Delete"
+            type="danger"
             size="small"
             circle
           />
@@ -33,25 +29,32 @@
 </template>
 
 <script>
-import { api } from "../api/words";
+import { defineComponent } from 'vue';
+import { Delete } from '@element-plus/icons-vue';
 
-export default {
-  name: "WordsList",
+export const WordListEvents = {
+  DELETE_WORD: 'DELETE_WORD',
+};
 
+export default defineComponent({
+  name: 'WordsList',
   props: {
     words: {
       type: Array,
       required: true,
     },
   },
-  methods: {
-    async deleteItem(origin) {
-      const response = await api().delete(`/words/${origin}`);
-      console.log(response);
-      this.$emit("update");
-    },
+  emits: Object.values(WordListEvents),
+  setup(props, { emit }) {
+    const deleteItem = (origin) => {
+      emit(WordListEvents.DELETE_WORD, origin);
+    };
+    return {
+      deleteItem,
+      Delete,
+    };
   },
-};
+});
 </script>
 
 <style scoped>

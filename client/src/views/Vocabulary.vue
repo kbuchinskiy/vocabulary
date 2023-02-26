@@ -10,13 +10,12 @@
             placeholder="Word to add"
           ></el-input>
         </el-col>
-
         <el-col :span="5">
           <el-input v-model="translation" placeholder="Translation" />
         </el-col>
         <el-col :span="2">
           <el-button
-            icon="el-icon-plus"
+            :icon="Plus"
             :disabled="!enableAddBtn"
             @click="addWord"
             circle
@@ -24,7 +23,10 @@
         </el-col>
       </el-row>
     </div>
-    <words-list :words="dictionaryData" @update="fetchWords" />
+    <words-list
+      :words="dictionaryData"
+      @[WordListEvents.DELETE_WORD]="deleteWord"
+    />
     <el-pagination
       v-show="itemsTotal > limit"
       layout="prev, pager, next"
@@ -37,78 +39,113 @@
 </template>
 
 <script>
-import WordsList from "@/components/WordsList";
-import { api } from "@/api/words";
-import _ from "lodash";
+import WordsList from '@/components/WordsList.vue';
+import { api } from '@/api/words';
+import { debounce } from 'lodash';
+import { defineComponent, ref, computed, onBeforeMount, watch } from 'vue';
+import { WordListEvents } from '@/components/WordsList.vue';
+import { ElMessage } from 'element-plus';
+import { Plus } from '@element-plus/icons-vue';
 
-export default {
-  name: "Vocabulary",
+export default defineComponent({
+  name: 'Vocabulary',
   components: { WordsList },
-  data() {
-    return {
-      loading: false,
-      dictionaryData: [],
-      origin: "",
-      translation: "",
+  setup() {
+    const loading = ref(false);
+    const dictionaryData = ref([]);
+    const origin = ref('');
+    const translation = ref('');
+    const pageNumber = ref(1);
+    const itemsTotal = ref(0);
+    const limit = ref(10);
 
-      pageNumber: 1,
-      itemsTotal: 0,
-      limit: 10,
-    };
-  },
-  computed: {
-    enableAddBtn() {
+    const enableAddBtn = computed(() => {
       return (
-        this.origin.length > 2 &&
-        this.translation.length > 2 &&
-        !this.dictionaryData.length
+        origin.value.length > 2 &&
+        translation.value.length > 2 &&
+        !dictionaryData.value.length
       );
-    },
-  },
-  methods: {
-    async addWord() {
-      this.loading = true;
+    });
+
+    const addWord = async () => {
+      loading.value = true;
       try {
-        await api().post("/words", {
-          origin: this.origin,
-          translation: this.translation,
+        await api().post('/words', {
+          origin: origin.value,
+          translation: translation.value,
         });
       } catch (e) {
-        this.$message.error("Word doesn't exist");
-        console.log(e);
+        ElMessage({
+          message: 'Word doesn\'t exist"',
+          grouping: true,
+          type: 'error',
+        });
+        console.error(e);
       }
 
-      this.origin = "";
-      this.translation = "";
-      this.itemsTotal = 0;
+      origin.value = '';
+      translation.value = '';
+      itemsTotal.value = 0;
 
-      this.loading = false;
-    },
-    async fetchWords(pageNumber = this.pageNumber) {
-      this.loading = true;
-      const { data } = await api().get("/words", {
+      loading.value = false;
+    };
+
+    const deleteWord = async (origin) => {
+      await api().delete(`/words/${origin}`);
+      await fetchWords();
+    };
+
+    const fetchWords = async () => {
+      loading.value = true;
+      // const accessToken = await this.$auth.getTokenSilently();
+      const { data } = await api().get('/words', {
+        // headers: {
+        //   Authorization: `Bearer ${accessToken}`,
+        // },
         params: {
-          search: this.origin,
-          limit: this.limit,
-          page: pageNumber,
+          search: origin.value,
+          limit: limit.value,
+          page: pageNumber.value,
         },
       });
-      this.dictionaryData = data.data;
-      this.itemsTotal = data.count;
+      dictionaryData.value = data.data;
+      itemsTotal.value = data.count;
 
-      this.loading = false;
-    },
+      loading.value = false;
+    };
+
+    const fetchWithDelay = debounce(() => {
+      fetchWords();
+    }, 500);
+
+    watch(
+      () => origin.value,
+      () => {
+        fetchWithDelay();
+      }
+    );
+
+    onBeforeMount(() => {
+      fetchWords();
+    });
+
+    return {
+      loading,
+      dictionaryData,
+      origin,
+      translation,
+      pageNumber,
+      itemsTotal,
+      limit,
+      enableAddBtn,
+      addWord,
+      deleteWord,
+      fetchWords,
+      WordListEvents,
+      Plus,
+    };
   },
-  watch: {
-    //search
-    origin: _.debounce(async function () {
-      await this.fetchWords(this.origin);
-    }, 500),
-  },
-  async created() {
-    await this.fetchWords();
-  },
-};
+});
 </script>
 
 <style>
