@@ -15,7 +15,7 @@ const fetchThirdPartyData = async (origin) => {
   const dataObj = {
     origin: '',
     phonetic: '',
-    definitions: '',
+    definitions: [],
     imgUrl: ''
   };
   try {
@@ -23,7 +23,7 @@ const fetchThirdPartyData = async (origin) => {
 
     dataObj.origin = dictionaryResponse.data[0].word;
     dataObj.phonetic = dictionaryResponse.data[0].phonetic || '';
-    dataObj.definitions = dictionaryResponse.data[0].meanings;
+    dataObj.definitions = dictionaryResponse.data[0].meanings || [];
 
     dataObj.definitions = dictionaryResponse.data[0].meanings.map(m => {
       const { partOfSpeech } = m;

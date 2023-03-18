@@ -61,8 +61,10 @@ const createItem = asyncHandler(async (req, res, next) => {
     image_url: imgUrl
   });
 
-  await knexClient('definitions').insert(definitionsArr);
-
+  if (definitionsArr.length) {
+    await knexClient('definitions').insert(definitionsArr);
+  }
+  
   res.status(201).json({
     success: true,
     data: definitionsArr

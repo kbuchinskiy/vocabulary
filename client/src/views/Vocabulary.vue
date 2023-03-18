@@ -8,13 +8,15 @@
             v-model="origin"
             :debounce="1000"
             placeholder="Word to add"
+            data-testid="input-origin"
           ></el-input>
         </el-col>
         <el-col :span="5">
-          <el-input v-model="translation" placeholder="Translation" />
+          <el-input v-model="translation" placeholder="Translation" data-testid="input-translation"/>
         </el-col>
         <el-col :span="2">
           <el-button
+            data-testid="add-word-button"
             :icon="Plus"
             :disabled="!enableAddBtn"
             @click="addWord"
@@ -49,7 +51,7 @@ import { useWordsStore } from '@/store/words';
 export default defineComponent({
   name: 'Vocabulary',
   components: { WordsList },
-  setup() {
+  setup () {
     const loading = ref(false);
 
     const origin = ref('');

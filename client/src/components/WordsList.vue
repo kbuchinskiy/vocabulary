@@ -1,22 +1,20 @@
 <template>
-  <div>
-    <el-table :data="words" empty-text="No words" @row-click="onRowClick">
-      <el-table-column label="Word" prop="origin" />
-      <el-table-column label="Phonetic" prop="phonetic" />
-      <el-table-column label="Translation" prop="translation" />
-      <el-table-column align="center" width="60">
-        <template v-slot="scope">
-          <el-button
-            @click.stop="deleteItem(scope.row.origin)"
-            :icon="Delete"
-            type="danger"
-            size="small"
-            circle
-          />
-        </template>
-      </el-table-column>
-    </el-table>
-  </div>
+  <el-table :data="words" empty-text="No words" @row-click="onRowClick">
+    <el-table-column label="Word" prop="origin"/>
+    <el-table-column label="Phonetic" prop="phonetic"/>
+    <el-table-column label="Translation" prop="translation"/>
+    <el-table-column align="center" width="60">
+      <template v-slot="scope">
+        <el-button
+          @click.stop="deleteItem(scope.row.origin)"
+          :icon="Delete"
+          type="danger"
+          size="small"
+          circle
+        />
+      </template>
+    </el-table-column>
+  </el-table>
 </template>
 
 <script>
@@ -37,7 +35,7 @@ export default defineComponent({
     },
   },
   emits: Object.values(WordListEvents),
-  setup(props, { emit }) {
+  setup (props, { emit }) {
     const router = useRouter();
     const deleteItem = (origin) => {
       emit(WordListEvents.DELETE_WORD, origin);
@@ -68,5 +66,9 @@ h2 {
   display: block;
   width: 50px;
   height: 50px;
+}
+
+>>> .el-table__cell {
+  cursor: pointer;
 }
 </style>
