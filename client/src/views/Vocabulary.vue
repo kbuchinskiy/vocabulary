@@ -1,6 +1,7 @@
 <template>
   <div v-loading="loading">
     <h2>Vocabulary</h2>
+    <h4>words total: {{ dictionaryData.length }}</h4>
     <div class="actions-panel">
       <el-row :gutter="10" justify="center" type="flex">
         <el-col :span="5">
@@ -145,7 +146,11 @@ export default defineComponent({
 
 <style scoped>
 h2 {
-  margin: 1.5em 0 1em;
+  margin: 1.5em 0 0;
+}
+
+h4 {
+  margin: 1em 0;
 }
 
 .el-pagination {
